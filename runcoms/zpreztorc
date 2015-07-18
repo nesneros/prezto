@@ -26,7 +26,8 @@ zstyle ':prezto:*:*' color 'yes'
 zstyle ':prezto:load' pmodule \
   'environment' \
   'terminal' \
-  'editor' \
+  'editor'\
+  'osx' \
   'history' \
   'directory' \
   'spectrum' \
