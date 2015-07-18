@@ -26,13 +26,15 @@ zstyle ':prezto:*:*' color 'yes'
 zstyle ':prezto:load' pmodule \
   'environment' \
   'terminal' \
-  'editor'\
+  'editor' \
   'osx' \
   'history' \
   'directory' \
   'spectrum' \
   'utility' \
   'completion' \
+  'syntax-highlighting' \
+  'history-substring-search' \
   'prompt'
 
 #
@@ -43,7 +45,7 @@ zstyle ':prezto:load' pmodule \
 zstyle ':prezto:module:editor' key-bindings 'emacs'
 
 # Auto convert .... to ../..
-# zstyle ':prezto:module:editor' dot-expansion 'yes'
+zstyle ':prezto:module:editor' dot-expansion 'yes'
 
 #
 # Git
@@ -86,7 +88,7 @@ zstyle ':prezto:module:editor' key-bindings 'emacs'
 # Set the prompt theme to load.
 # Setting it to 'random' loads a random theme.
 # Auto set to 'off' on dumb terminals.
-zstyle ':prezto:module:prompt' theme 'sorin'
+zstyle ':prezto:module:prompt' theme 'nesneros'
 
 #
 # Ruby
@@ -142,7 +144,8 @@ zstyle ':prezto:module:terminal' auto-title 'yes'
 zstyle ':prezto:module:terminal:window-title' format '%n@%m: %s'
 
 # Set the tab title format.
-zstyle ':prezto:module:terminal:tab-title' format '%m: %s'
+#JHS zstyle ':prezto:module:terminal:tab-title' format '%m: %s'
+zstyle ':prezto:module:terminal:tab-title' format '%s'
 
 #
 # Tmux
