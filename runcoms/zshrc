@@ -13,4 +13,4 @@ fi
 # Customize to your needs...
 
 source /etc/unuxus/etc/profile/zshrc
-source ~/projects/unuxus/lib/zsh/unuxus.zsh-theme
+
