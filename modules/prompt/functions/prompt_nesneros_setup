@@ -1,3 +1,5 @@
+#! /bin/sh
+#
 # Authors:
 #   Jan Sorensen <sorensenjan@gmail.com>
 
@@ -89,7 +91,7 @@ function prompt_nesneros_precmd {
     local pchar='$'
     local ret_status="%(?:%{$fg_bold[green]%}${pchar}:%{$fg_bold[red]%}%? ${pchar}%s)"
     PROMPT="
-%{$fg[cyan]%}%* %{$fg_bold[green]%}${PWD/#$HOME/~} %{$fg_bold[blue]%}$(git_prompt_string)$(hg_prompt_info)
+%{$fg[cyan]%}$(date +%H:%M:%S) %{$fg_bold[green]%}${PWD/#$HOME/~} %{$fg_bold[blue]%}$(git_prompt_string)$(hg_prompt_info)
 ${ret_status}%{$reset_color%} "
 }
 
