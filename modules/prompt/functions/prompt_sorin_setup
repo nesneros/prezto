@@ -94,7 +94,7 @@ function prompt_sorin_precmd {
 
   _timestamp=$(date +%H:%M:%S)
   local pchar='$'
-  _rc="%(?:%F{10}${pchar}:%F{9}%? ${pchar}%s)"
+  _rc="%(?:%B%F{10}${pchar}:%B%F{9}%? ${pchar})%f%b"
 }
 
 function prompt_sorin_setup {
