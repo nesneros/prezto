@@ -25,6 +25,7 @@ zstyle ':prezto:*:*' color 'yes'
 # The order matters.
 zstyle ':prezto:load' pmodule \
        'environment' \
+       'unuxus' \
        'terminal' \
        'editor' \
        'osx' \
@@ -33,7 +34,6 @@ zstyle ':prezto:load' pmodule \
        'spectrum' \
        'utility' \
        'completion' \
-       'unuxus' \
        'syntax-highlighting' \
        'history-substring-search' \
        'prompt'
