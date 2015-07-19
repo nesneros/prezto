@@ -91,6 +91,10 @@ function prompt_sorin_precmd {
   trap prompt_sorin_git_info WINCH
   prompt_sorin_precmd_async &!
   _prompt_sorin_precmd_async_pid=$!
+
+  _timestamp=$(date +%H:%M:%S)
+  local pchar='$'
+  _rc="%(?:%F{10}${pchar}:%F{9}%? ${pchar}%s)"
 }
 
 function prompt_sorin_setup {
@@ -131,7 +135,10 @@ function prompt_sorin_setup {
     'status' '$(coalesce "%b" "%p" "%c")%s%A%B%S%a%d%m%r%U%u'
 
   # Define prompts.
-  PROMPT='${SSH_TTY:+"%F{9}%n%f%F{7}@%f%F{3}%m%f "}%F{4}${_prompt_sorin_pwd}%(!. %B%F{1}#%f%b.)${editor_info[keymap]} '
+#  PROMPT='${SSH_TTY:+"%F{9}%n%f%F{7}@%f%F{3}%m%f "}%F{4}${_prompt_sorin_pwd}%(!. %B%F{1}#%f%b.)${editor_info[keymap]} '
+  PROMPT='
+%F{6}$_timestamp ${SSH_TTY:+"%F{9}%n%f%F{7}@%f%F{3}%m%f "}%F{2}${PWD/#$HOME/~}%(!. %B%F{1}#%f%b.) ${editor_info[keymap]} 
+$_rc '
   RPROMPT=''
   SPROMPT='zsh: correct %F{1}%R%f to %F{2}%r%f [nyae]? '
 }
