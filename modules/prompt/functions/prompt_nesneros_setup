@@ -4,6 +4,8 @@
 #   Jan Sorensen <sorensenjan@gmail.com>
 
 autoload -U colors && colors
+autoload -Uz vcs_info
+zstyle ':vcs_info:*' enable git hg svn
 
 function _hg_root {
     local dir=$PWD
@@ -90,16 +92,21 @@ git_prompt_string() {
 function prompt_nesneros_precmd {
     local pchar='$'
     local ret_status="%(?:%{$fg_bold[green]%}${pchar}:%{$fg_bold[red]%}%? ${pchar}%s)"
+    vcs_info
+#%{$fg[cyan]%}$(date +%H:%M:%S) %{$fg_bold[green]%}${PWD/#$HOME/~} %{$fg_bold[blue]%}$(git_prompt_string)$(hg_prompt_info)$vcs_info_msg_0_
     PROMPT="
-%{$fg[cyan]%}$(date +%H:%M:%S) %{$fg_bold[green]%}${PWD/#$HOME/~} %{$fg_bold[blue]%}$(git_prompt_string)$(hg_prompt_info)
+%{$fg[cyan]%}$(date +%H:%M:%S) %{$fg_bold[green]%}${PWD/#$HOME/~} %{$fg_bold[blue]%} $(git_prompt_string) $vcs_info_msg_0_
 ${ret_status}%{$reset_color%} "
 }
 
 function prompt_nesneros_setup {
     autoload -Uz add-zsh-hook
     add-zsh-hook precmd prompt_nesneros_precmd
-
-    RPROMPT=''
+    setopt prompt_subst
+    zstyle ':vcs_info:*' formats "%{$fg[white]%}%s:%{$reset_color%} %{$fg[blue]%}%b%{$reset_color%} %m %u%c%{$reset_color%} %a "
+    zstyle ':vcs_info:*' check-for-changes true
+    
+    RPROMPT="$vcs_info_msg_0"
     SPROMPT='zsh: correct %F{1}%R%f to %F{2}%r%f [nyae]? '
 }
 
