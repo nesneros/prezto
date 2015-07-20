@@ -1,1 +1,1 @@
-source /etc/unuxus/etc/profile/zshrc
+source /etc/unuxus/env
