@@ -82,6 +82,10 @@ function prompt_sorin_precmd {
   # Define prompts.
   RPROMPT='${editor_info[overwrite]}%(?:: %F{1}⏎%f)${VIM:+" %B%F{6}V%f%b"}'
 
+  _timestamp=$(date +%H:%M:%S)
+  local pchar='$'
+  _rc="%(?:%B%F{10}${pchar}:%B%F{9}%? ${pchar})%f%b"
+
   # Kill the old process of slow commands if it is still running.
   if (( _prompt_sorin_precmd_async_pid > 0 )); then
     kill -KILL "$_prompt_sorin_precmd_async_pid" &>/dev/null
@@ -91,10 +95,6 @@ function prompt_sorin_precmd {
   trap prompt_sorin_git_info WINCH
   prompt_sorin_precmd_async &!
   _prompt_sorin_precmd_async_pid=$!
-
-  _timestamp=$(date +%H:%M:%S)
-  local pchar='$'
-  _rc="%(?:%B%F{10}${pchar}:%B%F{9}%? ${pchar})%f%b"
 }
 
 function prompt_sorin_setup {
