@@ -1,113 +1,173 @@
-#! /bin/sh
+#
+# A simple theme that displays relevant, contextual information. Heavily inspired by sorin and also pure prompt
 #
 # Authors:
 #   Jan Sorensen <sorensenjan@gmail.com>
 
-autoload -U colors && colors
-autoload -Uz vcs_info
-zstyle ':vcs_info:*' enable git hg svn
+#
+# 16 Terminal Colors
+# -- ---------------
+#  0 black
+#  1 red
+#  2 green
+#  3 yellow
+#  4 blue
+#  5 magenta
+#  6 cyan
+#  7 white
+#  8 bright black
+#  9 bright red
+# 10 bright green
+# 11 bright yellow
+# 12 bright blue
+# 13 bright magenta
+# 14 bright cyan
+# 15 bright white
+#
 
-function _hg_root {
-    local dir=$PWD
-    while [ ! -d "$dir/.hg" ] ; do
-       dir=$(print $dir(:h))
-       [ $dir = '/' ] && return 1
-    done
-    print $dir
+# Load dependencies.
+pmodload 'helper'
+
+function prompt_nesneros_git_info {
+  if (( _prompt_nesneros_precmd_async_pid > 0 )); then
+    # Append Git status.
+    if [[ -s "$_prompt_nesneros_precmd_async_data" ]]; then
+      alias typeset='typeset -g'
+      source "$_prompt_nesneros_precmd_async_data"
+      #RPROMPT+='${git_info:+${(e)git_info[status]}}'
+      prompt_nesneros_vcs_info="${git_info:+${(e)git_info[status]}}"
+      unalias typeset
+    fi
+
+    # Reset PID.
+    _prompt_nesneros_precmd_async_pid=0
+
+    # Redisplay prompt.
+    zle && zle reset-prompt
+  fi
 }
 
-function hg_prompt_info {
-    r=$(_hg_root) || return
-    cat $r/.hg/branch 2>/dev/null || echo 'default'
-}
-
-
-# Adapted from code found at <https://gist.github.com/1712320>.
-
-setopt prompt_subst
-autoload -U colors
-colors # Enable colors in prompt
-
-# Modify the colors and symbols in these variables as desired.
-GIT_PROMPT_SYMBOL="%{$fg[blue]%}±"
-GIT_PROMPT_PREFIX="%{$fg[green]%}[%{$reset_color%}"
-GIT_PROMPT_SUFFIX="%{$fg[green]%}]%{$reset_color%}"
-GIT_PROMPT_AHEAD="%{$fg[red]%}ANUM%{$reset_color%}"
-GIT_PROMPT_BEHIND="%{$fg[cyan]%}BNUM%{$reset_color%}"
-GIT_PROMPT_MERGING="%{$fg_bold[magenta]%}⚡︎%{$reset_color%}"
-GIT_PROMPT_UNTRACKED="%{$fg_bold[red]%}●%{$reset_color%}"
-GIT_PROMPT_MODIFIED="%{$fg_bold[yellow]%}●%{$reset_color%}"
-GIT_PROMPT_STAGED="%{$fg_bold[green]%}●%{$reset_color%}"
-
-# Show Git branch/tag, or name-rev if on detached head
-parse_git_branch() {
-  (git symbolic-ref -q HEAD || git name-rev --name-only --no-undefined --always HEAD) 2> /dev/null
-}
-
-# Show different symbols as appropriate for various Git repository states
-parse_git_state() {
-
-  # Compose this value via multiple conditional appends.
-  local GIT_STATE=""
-
-  local NUM_AHEAD="$(git log --oneline @{u}.. 2> /dev/null | wc -l | tr -d ' ')"
-  if [ "$NUM_AHEAD" -gt 0 ]; then
-    GIT_STATE=$GIT_STATE${GIT_PROMPT_AHEAD//NUM/$NUM_AHEAD}
+function prompt_nesneros_precmd_async {
+  # Get Git repository information.
+  if (( $+functions[git-info] )); then
+    git-info
+    typeset -p git_info >! "$_prompt_nesneros_precmd_async_data"
   fi
 
-  local NUM_BEHIND="$(git log --oneline ..@{u} 2> /dev/null | wc -l | tr -d ' ')"
-  if [ "$NUM_BEHIND" -gt 0 ]; then
-    GIT_STATE=$GIT_STATE${GIT_PROMPT_BEHIND//NUM/$NUM_BEHIND}
-  fi
-
-  local GIT_DIR="$(git rev-parse --git-dir 2> /dev/null)"
-  if [ -n $GIT_DIR ] && test -r $GIT_DIR/MERGE_HEAD; then
-    GIT_STATE=$GIT_STATE$GIT_PROMPT_MERGING
-  fi
-
-  if [[ -n $(git ls-files --other --exclude-standard 2> /dev/null) ]]; then
-    GIT_STATE=$GIT_STATE$GIT_PROMPT_UNTRACKED
-  fi
-
-  if ! git diff --quiet 2> /dev/null; then
-    GIT_STATE=$GIT_STATE$GIT_PROMPT_MODIFIED
-  fi
-
-  if ! git diff --cached --quiet 2> /dev/null; then
-    GIT_STATE=$GIT_STATE$GIT_PROMPT_STAGED
-  fi
-
-  if [[ -n $GIT_STATE ]]; then
-    echo "$GIT_PROMPT_PREFIX$GIT_STATE$GIT_PROMPT_SUFFIX"
-  fi
-
-}
-
-# If inside a Git repository, print its branch and state
-git_prompt_string() {
-  local git_where="$(parse_git_branch)"
-  [ -n "$git_where" ] && echo "$GIT_PROMPT_SYMBOL$(parse_git_state)$GIT_PROMPT_PREFIX%{$fg[yellow]%}${git_where#(refs/heads/|tags/)}$GIT_PROMPT_SUFFIX"
+  # Signal completion to parent process.
+  kill -WINCH $$
 }
 
 function prompt_nesneros_precmd {
-    local pchar='$'
-    local ret_status="%(?:%{$fg_bold[green]%}${pchar}:%{$fg_bold[red]%}%? ${pchar}%s)"
-    vcs_info
-#%{$fg[cyan]%}$(date +%H:%M:%S) %{$fg_bold[green]%}${PWD/#$HOME/~} %{$fg_bold[blue]%}$(git_prompt_string)$(hg_prompt_info)$vcs_info_msg_0_
-    PROMPT="
-%{$fg[cyan]%}$(date +%H:%M:%S) %{$fg_bold[green]%}${PWD/#$HOME/~} %{$fg_bold[blue]%} $(git_prompt_string) $vcs_info_msg_0_
-${ret_status}%{$reset_color%} "
+  setopt LOCAL_OPTIONS
+  unsetopt XTRACE KSH_ARRAYS
+
+  promp_nesneros_elapsed_time=$(prompt_nesneros_check_cmd_exec_time)
+  unset prompt_nesneros_cmd_timestamp
+  
+  # Define prompts.
+  #RPROMPT='${editor_info[overwrite]}%(?:: %F{1}⏎%f)${VIM:+" %B%F{6}V%f%b"}'
+
+  _timestamp=$(date +%H:%M:%S)
+  local pchar='%#'
+  _rc="%(?:%B%F{10}${pchar}:%B%F{9}%? ${pchar})%f%b"
+
+  # Kill the old process of slow commands if it is still running.
+  if (( _prompt_nesneros_precmd_async_pid > 0 )); then
+    kill -KILL "$_prompt_nesneros_precmd_async_pid" &>/dev/null
+  fi
+
+  # Compute slow commands in the background.
+  trap prompt_nesneros_git_info WINCH
+  prompt_nesneros_precmd_async &!
+  _prompt_nesneros_precmd_async_pid=$!
+}
+
+function  prompt_nesneros_preexec {
+  prompt_nesneros_cmd_timestamp=$EPOCHSECONDS
 }
 
 function prompt_nesneros_setup {
-    autoload -Uz add-zsh-hook
-    add-zsh-hook precmd prompt_nesneros_precmd
-    setopt prompt_subst
-    zstyle ':vcs_info:*' formats "%{$fg[white]%}%s:%{$reset_color%} %{$fg[blue]%}%b%{$reset_color%} %m %u%c%{$reset_color%} %a "
-    zstyle ':vcs_info:*' check-for-changes true
-    
-    RPROMPT="$vcs_info_msg_0"
-    SPROMPT='zsh: correct %F{1}%R%f to %F{2}%r%f [nyae]? '
+  # Load zsh/datatime module for EPOCHSECONDS
+  zmodload zsh/datetime
+  setopt LOCAL_OPTIONS
+  unsetopt XTRACE KSH_ARRAYS
+  prompt_opts=(cr percent subst)
+  _prompt_nesneros_precmd_async_pid=0
+  _prompt_nesneros_precmd_async_data="${TMPPREFIX}-prompt_nesneros_data"
+
+  # Load required functions.
+  autoload -Uz add-zsh-hook
+
+  # Add hook for calling git-info before each command.
+  add-zsh-hook precmd prompt_nesneros_precmd
+  add-zsh-hook preexec prompt_nesneros_preexec
+
+  # Set editor-info parameters.
+  zstyle ':prezto:module:editor:info:completing' format '%B%F{7}...%f%b'
+  zstyle ':prezto:module:editor:info:keymap:primary' format ' %B%F{1}❯%F{3}❯%F{2}❯%f%b'
+  zstyle ':prezto:module:editor:info:keymap:primary:overwrite' format ' %F{3}♺%f'
+  zstyle ':prezto:module:editor:info:keymap:alternate' format ' %B%F{2}❮%F{3}❮%F{1}❮%f%b'
+
+  # Set git-info parameters.
+  zstyle ':prezto:module:git:info' verbose 'yes'
+  zstyle ':prezto:module:git:info:action' format '%F{7}:%f%%B%F{9}%s%f%%b'
+  zstyle ':prezto:module:git:info:added' format ' %%B%F{2}✚%f%%b'
+  zstyle ':prezto:module:git:info:ahead' format ' %%B%F{13}⬆%f%%b'
+  zstyle ':prezto:module:git:info:behind' format ' %%B%F{13}⬇%f%%b'
+  zstyle ':prezto:module:git:info:branch' format ' %%B%F{2}%b%f%%b'
+  zstyle ':prezto:module:git:info:commit' format ' %%B%F{3}%.7c%f%%b'
+  zstyle ':prezto:module:git:info:deleted' format ' %%B%F{1}✖%f%%b'
+  zstyle ':prezto:module:git:info:modified' format ' %%B%F{4}✱%f%%b'
+  zstyle ':prezto:module:git:info:position' format ' %%B%F{13}%p%f%%b'
+  zstyle ':prezto:module:git:info:renamed' format ' %%B%F{5}➜%f%%b'
+  zstyle ':prezto:module:git:info:stashed' format ' %%B%F{6}✭%f%%b'
+  zstyle ':prezto:module:git:info:unmerged' format ' %%B%F{3}═%f%%b'
+  zstyle ':prezto:module:git:info:untracked' format ' %%B%F{7}◼%f%%b'
+  zstyle ':prezto:module:git:info:keys' format \
+    'status' '$(coalesce "%b" "%p" "%c")%s%A%B%S%a%d%m%r%U%u'
+
+  # Define prompts.
+  PROMPT='
+%F{6}$_timestamp ${SSH_TTY:+"%F{9}%n%f%F{7}@%f%F{3}%m%f "}%F{2}${PWD/#$HOME/~}%(!. %B%F{1}#%f%b.) ${editor_info[keymap]} ${prompt_nesneros_vcs_info} ${promp_nesneros_elapsed_time}
+$_rc '
+  RPROMPT=''
+  SPROMPT='zsh: correct %F{1}%R%f to %F{2}%r%f [nyae]? '
+}
+
+function prompt_nesneros_preview {
+  local +h PROMPT=''
+  local +h RPROMPT=''
+  local +h SPROMPT=''
+
+  editor-info 2>/dev/null
+  prompt_preview_theme 'nesneros'
 }
 
 prompt_nesneros_setup "$@"
+
+# Functions borrowed from pure related to printing execution time for commands
+
+# turns seconds into human readable time
+# 165392 => 1d 21h 56m 32s
+# https://github.com/sindresorhus/pretty-time-zsh
+prompt_nesneros_human_time() {
+    echo -n " "
+    local tmp=$1
+    local days=$(( tmp / 60 / 60 / 24 ))
+    local hours=$(( tmp / 60 / 60 % 24 ))
+    local minutes=$(( tmp / 60 % 60 ))
+    local seconds=$(( tmp % 60 ))
+    (( $days > 0 )) && echo -n "${days}d "
+    (( $hours > 0 )) && echo -n "${hours}h "
+    (( $minutes > 0 )) && echo -n "${minutes}m "
+    echo "${seconds}s "
+}
+
+# displays the exec time of the last command if set threshold was exceeded
+prompt_nesneros_check_cmd_exec_time() {
+    local stop=$EPOCHSECONDS
+    local start=${prompt_nesneros_cmd_timestamp:-$stop}
+    integer elapsed=$stop-$start
+    (($elapsed > 5)) && prompt_nesneros_human_time $elapsed
+}
