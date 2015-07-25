@@ -49,8 +49,7 @@ function prompt_sorin_git_info {
     if [[ -s "$_prompt_sorin_precmd_async_data" ]]; then
       alias typeset='typeset -g'
       source "$_prompt_sorin_precmd_async_data"
-      #RPROMPT+='${git_info:+${(e)git_info[status]}}'
-      prompt_nesneros_vcs_info="${git_info:+${(e)git_info[status]}}"
+      RPROMPT+='${git_info:+${(e)git_info[status]}}'
       unalias typeset
     fi
 
@@ -77,18 +76,11 @@ function prompt_sorin_precmd {
   setopt LOCAL_OPTIONS
   unsetopt XTRACE KSH_ARRAYS
 
-  promp_nesneros_elapsed_time=$(prompt_nesneros_check_cmd_exec_time)
-  unset prompt_nesneros_cmd_timestamp
-  
   # Format PWD.
   prompt_sorin_pwd
 
   # Define prompts.
   RPROMPT='${editor_info[overwrite]}%(?:: %F{1}⏎%f)${VIM:+" %B%F{6}V%f%b"}'
-
-  _timestamp=$(date +%H:%M:%S)
-  local pchar='%#'
-  _rc="${promp_nesneros_elapsed_time}%(?:%B%F{10}${pchar}:%B%F{9}%? ${pchar})%f%b"
 
   # Kill the old process of slow commands if it is still running.
   if (( _prompt_sorin_precmd_async_pid > 0 )); then
@@ -101,13 +93,7 @@ function prompt_sorin_precmd {
   _prompt_sorin_precmd_async_pid=$!
 }
 
-function  prompt_nesneros_preexec {
-  prompt_nesneros_cmd_timestamp=$EPOCHSECONDS
-}
-
 function prompt_sorin_setup {
-  # Load zsh/datatime module for EPOCHSECONDS
-  zmodload zsh/datetime
   setopt LOCAL_OPTIONS
   unsetopt XTRACE KSH_ARRAYS
   prompt_opts=(cr percent subst)
@@ -119,7 +105,6 @@ function prompt_sorin_setup {
 
   # Add hook for calling git-info before each command.
   add-zsh-hook precmd prompt_sorin_precmd
-  add-zsh-hook preexec prompt_nesneros_preexec
 
   # Set editor-info parameters.
   zstyle ':prezto:module:editor:info:completing' format '%B%F{7}...%f%b'
@@ -146,10 +131,7 @@ function prompt_sorin_setup {
     'status' '$(coalesce "%b" "%p" "%c")%s%A%B%S%a%d%m%r%U%u'
 
   # Define prompts.
-#  PROMPT='${SSH_TTY:+"%F{9}%n%f%F{7}@%f%F{3}%m%f "}%F{4}${_prompt_sorin_pwd}%(!. %B%F{1}#%f%b.)${editor_info[keymap]} '
-  PROMPT='
-%F{6}$_timestamp ${SSH_TTY:+"%F{9}%n%f%F{7}@%f%F{3}%m%f "}%F{2}${PWD/#$HOME/~}%(!. %B%F{1}#%f%b.) ${editor_info[keymap]} ${prompt_nesneros_vcs_info}
-$_rc '
+  PROMPT='${SSH_TTY:+"%F{9}%n%f%F{7}@%f%F{3}%m%f "}%F{4}${_prompt_sorin_pwd}%(!. %B%F{1}#%f%b.)${editor_info[keymap]} '
   RPROMPT=''
   SPROMPT='zsh: correct %F{1}%R%f to %F{2}%r%f [nyae]? '
 }
@@ -164,29 +146,3 @@ function prompt_sorin_preview {
 }
 
 prompt_sorin_setup "$@"
-
-# Functions borrowed from pure related to printing execution time for commands
-
-# turns seconds into human readable time
-# 165392 => 1d 21h 56m 32s
-# https://github.com/sindresorhus/pretty-time-zsh
-prompt_nesneros_human_time() {
-    echo -n " "
-    local tmp=$1
-    local days=$(( tmp / 60 / 60 / 24 ))
-    local hours=$(( tmp / 60 / 60 % 24 ))
-    local minutes=$(( tmp / 60 % 60 ))
-    local seconds=$(( tmp % 60 ))
-    (( $days > 0 )) && echo -n "${days}d "
-    (( $hours > 0 )) && echo -n "${hours}h "
-    (( $minutes > 0 )) && echo -n "${minutes}m "
-    echo "${seconds}s "
-}
-
-# displays the exec time of the last command if set threshold was exceeded
-prompt_nesneros_check_cmd_exec_time() {
-    local stop=$EPOCHSECONDS
-    local start=${prompt_nesneros_cmd_timestamp:-$stop}
-    integer elapsed=$stop-$start
-    (($elapsed > 5)) && prompt_nesneros_human_time $elapsed
-}
