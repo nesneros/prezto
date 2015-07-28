@@ -83,7 +83,7 @@ function prompt_nesneros_precmd {
   _prompt_nesneros_precmd_async_pid=$!
 }
 
-function  prompt_nesneros_preexec {
+function prompt_nesneros_preexec {
   prompt_nesneros_cmd_timestamp=$EPOCHSECONDS
 }
 
