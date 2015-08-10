@@ -24,7 +24,6 @@ zstyle ':prezto:*:*' color 'yes'
 # Set the Prezto modules to load (browse modules).
 # The order matters.
 # Unuxus should be early so the rest is loaded in unuxus enviroment
-# Completion module is not loaded. Instead zsh-completion (brew) is installed
 zstyle ':prezto:load' pmodule \
        'environment' \
        'unuxus' \
@@ -36,6 +35,7 @@ zstyle ':prezto:load' pmodule \
        'directory' \
        'spectrum' \
        'utility' \
+       'completion' \
        'fasd' \
        'syntax-highlighting' \
        'history-substring-search' \
