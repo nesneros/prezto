@@ -72,11 +72,22 @@ function prompt_nesneros_precmd {
   local pchar='%#'
   _rc="%(?:%B%F{10}${pchar}:%B%F{9}%? ${pchar})%f%b"
 
+  # Docker info
   if [ -z "$DOCKER_MACHINE_NAME" ] ; then
       prompt_nesneros_docker_info=
   else
       prompt_nesneros_docker_info="$DOCKER_MACHINE_NAME "
   fi
+
+  # Current directory. Mark git root by different color
+  # than the rest of path
+  local git_root=$(git rev-parse --show-toplevel 2> /dev/null)
+  if [[ -n "$git_root" ]] ; then
+      prompt_nesneros_pwd="${git_root/#$HOME/~}%F{10}${PWD/#$git_root/}"
+  else
+      prompt_nesneros_pwd="${PWD/#$HOME/~}"
+  fi
+      
 
   # Kill the old process of slow commands if it is still running.
   if (( _prompt_nesneros_precmd_async_pid > 0 )); then
@@ -135,7 +146,7 @@ function prompt_nesneros_setup {
 
   # Define prompts.
   PROMPT='
-%F{6}$_timestamp ${SSH_TTY:+"%F{9}%n%f%F{7}@%f%F{3}%m%f "}%F{7}${prompt_nesneros_docker_info}%F{2}${PWD/#$HOME/~}%(!. %B%F{1}#%f%b.) ${editor_info[keymap]} ${prompt_nesneros_vcs_info} ${promp_nesneros_elapsed_time}
+%F{6}$_timestamp ${SSH_TTY:+"%F{9}%n%f%F{7}@%f%F{3}%m%f "}%F{7}${prompt_nesneros_docker_info}%F{2}${prompt_nesneros_pwd}%(!. %B%F{1}#%f%b.) ${editor_info[keymap]} ${prompt_nesneros_vcs_info} ${promp_nesneros_elapsed_time}
 $_rc '
   RPROMPT=''
   SPROMPT='zsh: correct %F{1}%R%f to %F{2}%r%f [nyae]? '
