@@ -164,3 +164,6 @@ zstyle ':prezto:module:terminal:tab-title' format '%s'
 
 # Integrate with iTerm2.
 # zstyle ':prezto:module:tmux:iterm' integrate 'yes'
+
+# For pull request 948
+zstyle ':prezto:module:git:alias' skip 'yes'
