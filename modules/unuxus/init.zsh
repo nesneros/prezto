@@ -15,7 +15,7 @@ if [[ "$OSTYPE" == darwin* ]] ; then
         local git_completion=/usr/share/zsh/5.0.5/functions/_git
         if [[ -f $git_completion ]] ; then
             local fpathDir=${0:h}/unuxus_fpath
-            command rm -r $fpathDir
+            command rm -rf $fpathDir
             mkdir -p $fpathDir
             fpath=($fpathDir $fpath)
             ln -s $git_completion $fpathDir
