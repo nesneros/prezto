@@ -21,5 +21,14 @@ if [[ "$OSTYPE" == darwin* ]] ; then
             ln -s $git_completion $fpathDir
         fi
     fi
+
+    # Function to enable/disable usb network
+    function usbNetwork {
+        local onOff=$1
+        local serviceName="USB 10/100/1000 LAN"
+        sudo networksetup -setnetworkserviceenabled $serviceName $onOff
+        networksetup -listallnetworkservices | grep $serviceName
+    }
+
 fi
 
