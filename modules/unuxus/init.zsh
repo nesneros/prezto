@@ -24,10 +24,17 @@ if [[ "$OSTYPE" == darwin* ]] ; then
 
     # Function to enable/disable usb network
     function usbNetwork {
-        local onOff=$1
-        local serviceName="USB 10/100/1000 LAN"
-        sudo networksetup -setnetworkserviceenabled $serviceName $onOff
+        _networkHelper "USB 10/100/1000 LAN" $1
+    }
+
+    function _networkHelper {
+        local serviceName=$1
+        local onOff=$2
+        if [[ -n "$onOff" ]] ; then
+            sudo networksetup -setnetworkserviceenabled $serviceName $onOff
+        fi
         networksetup -listallnetworkservices | grep $serviceName
+
     }
 
 fi
