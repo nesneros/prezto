@@ -12,5 +12,5 @@ fi
 
 # Customize to your needs...
 
-
-
+setopt share_history # between shells
+setopt inc_append_history # conserve time order
