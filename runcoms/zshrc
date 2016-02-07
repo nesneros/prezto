@@ -1,4 +1,14 @@
 # -*- mode: sh -*-
+
+# Add coretutils (installed with brew) to path before doing the prezto stuff
+# This is needed so e.g. dircolors util is found
+
+if type brew > /dev/null ; then
+    BREW_PREFIX=$(brew --prefix)
+    
+    PATH="$BREW_PREFIX/opt/coreutils/libexec/gnubin:$PATH"
+fi
+
 #
 # Executes commands at the start of an interactive session.
 #
@@ -13,17 +23,21 @@ fi
 
 # Customize to your needs...
 
-BREW_PREFIX=$(brew --prefix)
+setopt autopushd
 
 setopt share_history # between shells
 setopt inc_append_history # conserve time order
 
 source /etc/unuxus/etc/profile/zshrc
 
+alias md=mkdir -p
+compdef md=mkdir
+
 alias -g L='|less'
 alias -g H='|head'
 alias -g T='|tail -100f'
 alias -g G='|grep -e'
+alias -g S='|sort'
 
 function fwhere {
     whence -a -v $1 | perl -n -e'/is a shell function from (.*)/ && print "$1\n"'
@@ -87,12 +101,20 @@ if type emacs > /dev/null ; then
 fi
 export VISUAL=$EDITOR    
 
-PATH="$BREW_PREFIX/opt/coreutils/libexec/gnubin:$PATH"
-MANPATH="$BREW_PREFIX/opt/coreutils/libexec/gnuman:$MANPATH"
+for file in ~/etc/zsh.d/*.(sh|zsh)(N) ; do
+    source "$file"
+done
+
+if [[ -n "$BREW_PREFIX" ]] ; then
+    MANPATH="$BREW_PREFIX/opt/coreutils/libexec/gnuman:$MANPATH"
+fi
+
+[[ -d $HOME/bin ]] && PATH=$HOME/bin:$PATH
 
 # Cleanup PATH and MANPATH
 typeset -u path
 typeset -u manpath
 
-export PATH
-export MANPATH
+# Define JAVA_HOME if not already set (only on Darwin)
+[ -x /usr/libexec/java_home ] && [ -z "$JAVA_HOME" ] && export JAVA_HOME=$(/usr/libexec/java_home)
+
