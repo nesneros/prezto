@@ -1,3 +1,4 @@
+# -*- mode: sh -*-
 #
 # Executes commands at the start of an interactive session.
 #
@@ -12,5 +13,86 @@ fi
 
 # Customize to your needs...
 
+BREW_PREFIX=$(brew --prefix)
+
 setopt share_history # between shells
 setopt inc_append_history # conserve time order
+
+source /etc/unuxus/etc/profile/zshrc
+
+alias -g L='|less'
+alias -g H='|head'
+alias -g T='|tail -100f'
+alias -g G='|grep -e'
+
+function fwhere {
+    whence -a -v $1 | perl -n -e'/is a shell function from (.*)/ && print "$1\n"'
+}
+
+function fedit {
+    e $(fwhere $1)
+}
+
+# from http://chneukirchen.org/blog/archive/2013/03/10-fresh-zsh-tricks-you-may-not-know.html
+imv() {
+  local src dst
+  for src; do
+    [[ -e $src ]] || { print -u2 "$src does not exist"; continue }
+    dst=$src
+    vared dst
+    [[ $src != $dst ]] && mkdir -p $dst:h && mv -n $src $dst
+  done
+}
+
+# from http://chneukirchen.org/blog/archive/2015/02/10-fancy-zsh-tricks-you-may-not-know.html
+_physical_up_line()   { zle backward-char -n $COLUMNS }
+_physical_down_line() { zle forward-char  -n $COLUMNS }
+zle -N physical-up-line _physical_up_line
+zle -N physical-down-line _physical_down_line
+bindkey "\e\e[A" physical-up-line    # Alt arrow up
+bindkey "\e\CP"  physical-up-line    # Escape Control P
+bindkey "\e\e[B" physical-down-line  # Alt arraw down
+bindkey "\e\CN" physical-down-line  # Escape Control N
+
+# Move to where the arguments belong.
+after-first-word() {
+  zle beginning-of-line
+  zle emacs-forward-word
+  zle forward-char
+}
+after-second-word() {
+  zle beginning-of-line
+  zle emacs-forward-word
+  zle emacs-forward-word
+  zle forward-char
+}
+zle -N after-first-word
+zle -N after-second-word
+bindkey "^X1" after-first-word
+bindkey "^X2" after-second-word
+
+export WORDCHARS='*?_-.[]~&;!#$%^(){}<>/'
+
+if type emacs > /dev/null ; then
+    if type emacsclient > /dev/null ; then
+        function e {
+            # get list of available X windows.
+            local x=$(emacsclient --alternate-editor '' --eval '(x-display-list)' 2>/dev/null)
+            ([[ -z "$x" ]] || [[ "$x" = 'nil' ]]) && extras=--create-frame
+            emacsclient --alternate-editor '' $extras --no-wait "$@"
+        }
+        unalias e
+    fi
+    export EDITOR=emacs
+fi
+export VISUAL=$EDITOR    
+
+PATH="$BREW_PREFIX/opt/coreutils/libexec/gnubin:$PATH"
+MANPATH="$BREW_PREFIX/opt/coreutils/libexec/gnuman:$MANPATH"
+
+# Cleanup PATH and MANPATH
+typeset -u path
+typeset -u manpath
+
+export PATH
+export MANPATH

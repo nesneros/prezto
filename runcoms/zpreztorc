@@ -34,13 +34,11 @@ zstyle ':prezto:load' pmodule \
        'history' \
        'directory' \
        'spectrum' \
-       'gnu-utility' \
        'utility' \
        'completion' \
        'fasd' \
        'syntax-highlighting' \
        'history-substring-search' \
-       'unuxus-late' \
        'prompt'
 #
 # Editor
