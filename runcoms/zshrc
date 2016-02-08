@@ -33,6 +33,9 @@ source /etc/unuxus/etc/profile/zshrc
 alias md=mkdir -p
 compdef md=mkdir
 
+# Why would you ever want grep to treat dirs like normal files?
+alias grep="${aliases[grep]:-grep} --directories=skip"
+
 alias -g L='|less'
 alias -g H='|head'
 alias -g T='|tail -100f'
