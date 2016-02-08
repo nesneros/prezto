@@ -42,6 +42,9 @@ alias -g T='|tail -100f'
 alias -g G='|grep -e'
 alias -g S='|sort'
 
+alias md='mkdir -p'
+alias h='history -f 1 | less +G'
+
 function fwhere {
     whence -a -v $1 | perl -n -e'/is a shell function from (.*)/ && print "$1\n"'
 }
@@ -120,4 +123,17 @@ typeset -u manpath
 
 # Define JAVA_HOME if not already set (only on Darwin)
 [ -x /usr/libexec/java_home ] && [ -z "$JAVA_HOME" ] && export JAVA_HOME=$(/usr/libexec/java_home)
+
+cd() {
+  if (( $# != 1 )); then
+    builtin cd "$@"
+    return
+  fi
+
+  if [[ -f "$1" ]]; then
+    builtin cd "$1:h"
+  else
+    builtin cd "$1"
+  fi
+}
 
