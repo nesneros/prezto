@@ -99,15 +99,7 @@ bindkey "^X2" after-second-word
 export WORDCHARS='*?_-.[]~&;!#$%^(){}<>/'
 
 if type emacs > /dev/null ; then
-    if type emacsclient > /dev/null ; then
-        function e {
-            # get list of available X windows.
-            local x=$(emacsclient --alternate-editor '' --eval '(x-display-list)' 2>/dev/null)
-            ([[ -z "$x" ]] || [[ "$x" = 'nil' ]]) && extras=--create-frame
-            emacsclient $extras --no-wait "$@"\
-        }
-        unalias e
-    fi
+    alias e=e.sh
     export EDITOR=emacs
 fi
 export VISUAL=$EDITOR    
