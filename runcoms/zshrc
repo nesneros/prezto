@@ -46,6 +46,10 @@ alias md='mkdir -p'
 alias h='history -f 1 | less +G'
 alias top='sudo htop'
 
+mcd() {
+ mkdir -p "$1" && cd "$1"
+}
+
 function fwhere {
     whence -a -v $1 | perl -n -e'/is a shell function from (.*)/ && print "$1\n"'
 }
@@ -98,9 +102,9 @@ if type emacs > /dev/null ; then
     if type emacsclient > /dev/null ; then
         function e {
             # get list of available X windows.
-            local x=$(emacsclient --alternate-editor '""' --eval '(x-display-list)' 2>/dev/null)
+            local x=$(emacsclient --alternate-editor '' --eval '(x-display-list)' 2>/dev/null)
             ([[ -z "$x" ]] || [[ "$x" = 'nil' ]]) && extras=--create-frame
-            emacsclient --alternate-editor '""' $extras --no-wait "$@"
+            emacsclient $extras --no-wait "$@"\
         }
         unalias e
     fi
