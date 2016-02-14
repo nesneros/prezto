@@ -100,6 +100,7 @@ export WORDCHARS='*?_-.[]~&;!#$%^(){}<>/'
 
 if type emacs > /dev/null ; then
     alias e=e.sh
+    alias egit='e.sh --git'
     export EDITOR=emacs
 fi
 export VISUAL=$EDITOR    
