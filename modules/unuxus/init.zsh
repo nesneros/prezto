@@ -12,8 +12,8 @@ if [[ "$OSTYPE" == darwin* ]] ; then
 
     if [[ $homebrewZsh == $SHELL ]] ; then
         # Use git completion from system zsh.
-        local git_completion=/usr/share/zsh/5.0.8/functions/_git
-        if [[ -f $git_completion ]] ; then
+        local git_completion=$(echo /usr/share/zsh/*/functions/_git(N[-1]))
+        if [[ -f "$git_completion" ]] ; then
             local fpathDir=${0:h}/unuxus_fpath
             command rm -rf $fpathDir
             mkdir -p $fpathDir
