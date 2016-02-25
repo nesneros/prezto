@@ -26,7 +26,6 @@ zstyle ':prezto:*:*' color 'yes'
 # Unuxus should be early so the rest is loaded in unuxus enviroment
 zstyle ':prezto:load' pmodule \
        'environment' \
-       'unuxus' \
        'git' \
        'terminal' \
        'editor' \
