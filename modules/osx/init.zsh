@@ -19,6 +19,3 @@ alias cdf='cd "$(pfd)"'
 
 # Pushes directory to the current Finder directory.
 alias pushdf='pushd "$(pfd)"'
-
-# Go to sleep
-alias afk='osascript -e ''tell app "System Events" to sleep'''
