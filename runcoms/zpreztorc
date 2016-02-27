@@ -23,7 +23,6 @@ zstyle ':prezto:*:*' color 'yes'
 
 # Set the Prezto modules to load (browse modules).
 # The order matters.
-# Unuxus should be early so the rest is loaded in unuxus enviroment
 zstyle ':prezto:load' pmodule \
        'environment' \
        'git' \
