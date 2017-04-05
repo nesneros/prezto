@@ -24,7 +24,6 @@ zstyle -s ':prezto:module:git:status:ignore' submodules '_git_status_ignore_subm
 
 #
 # Aliases
-?#
 
 if ! zstyle -t ':prezto:module:git:alias' skip 'yes'; then
     # Git
