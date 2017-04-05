@@ -218,6 +218,7 @@ The following aliases may shadow system commands:
 
   - `gpt` shadows the [GUID partition table maintenance utility][4].
   - `gs` shadows the [Ghostscript][5].
+  - `gb` shadows the [GB][9].
 
 If you frequently use the above commands, you may wish to remove said aliases
 from this module or to disable them at the bottom of the zshrc with `unalias`.
@@ -336,3 +337,4 @@ Authors
 [6]: https://github.com/sorin-ionescu/prezto/issues
 [7]: https://github.com/sorin-ionescu/prezto/issues/219
 [8]: http://www.kernel.org/pub/software/scm/git/docs/git-log.html
+[9]: https://getgb.io/
