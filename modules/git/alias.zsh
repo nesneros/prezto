@@ -53,17 +53,25 @@ if ! zstyle -t ':prezto:module:git:alias' skip 'yes'; then
   alias gc='git commit --verbose'
   alias gca='git commit --verbose --all'
   alias gcm='git commit --message'
+  alias gcS='git commit -S --verbose'
+  alias gcSa='git commit -S --verbose --all'
+  alias gcSm='git commit -S --message'
   alias gcam='git commit --all --message'
   alias gco='git checkout'
   alias gcO='git checkout --patch'
   alias gcf='git commit --amend --reuse-message HEAD'
+  alias gcSf='git commit -S --amend --reuse-message HEAD'
   alias gcF='git commit --verbose --amend'
+  alias gcSF='git commit -S --verbose --amend'
   alias gcp='git cherry-pick --ff'
   alias gcP='git cherry-pick --no-commit'
   alias gcr='git revert'
   alias gcR='git reset "HEAD^"'
   alias gcs='git show'
+  alias gcsS='git show --pretty=short --show-signature'
   alias gcl='git-commit-lost'
+  alias gcy='git cherry -v --abbrev'
+  alias gcY='git cherry -v'
 
   # Conflict (C)
   alias gCl='git --no-pager diff --name-only --diff-filter=U'
@@ -87,6 +95,7 @@ if ! zstyle -t ':prezto:module:git:alias' skip 'yes'; then
   alias gf='git fetch'
   alias gfa='git fetch --all'
   alias gfc='git clone'
+  alias gfcr='git clone --recurse-submodules'
   alias gfm='git pull'
   alias gfr='git pull --rebase'
 
@@ -182,6 +191,7 @@ if ! zstyle -t ':prezto:module:git:alias' skip 'yes'; then
   alias glg='git log --topo-order --all --graph --pretty=format:"${_git_log_oneline_format}"'
   alias glb='git log --topo-order --pretty=format:"${_git_log_brief_format}"'
   alias glc='git shortlog --summary --numbered'
+  alias glS='git log --show-signature'
 
   # Merge (m)
   alias gm='git merge'
@@ -243,6 +253,12 @@ if ! zstyle -t ':prezto:module:git:alias' skip 'yes'; then
   alias gSs='git submodule sync'
   alias gSu='git submodule foreach git pull origin master'
   alias gSx='git-submodule-remove'
+
+  # Tag (t)
+  alias gt='git tag'
+  alias gtl='git tag -l'
+  alias gts='git tag -s'
+  alias gtv='git verify-tag'
 
   # Working Copy (w)
   alias gws='git status --ignore-submodules=${_git_status_ignore_submodules} --short'
