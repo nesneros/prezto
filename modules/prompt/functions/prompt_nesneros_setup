@@ -79,6 +79,14 @@ function prompt_nesneros_precmd {
       prompt_nesneros_docker_info="$DOCKER_MACHINE_NAME "
   fi
 
+  # MIA info
+  # Docker info
+  if [ -z "$MIA_K8S_NAMESPACE" ] ; then
+      prompt_nesneros_mia_info=
+  else
+      prompt_nesneros_mia_info="[$MIA_K8S_NAMESPACE] "
+  fi
+
   # Current directory. Mark git root by different color
   # than the rest of path
   local git_root=$(git rev-parse --show-toplevel 2> /dev/null)
@@ -149,7 +157,7 @@ function prompt_nesneros_setup {
 
   # Define prompts.
   PROMPT='
-%F{6}$_timestamp ${SSH_TTY:+"%F{9}%n%f%F{7}@%f%F{3}%m%f "}%F{7}${prompt_nesneros_docker_info}%F{2}${_prompt_nesneros_pwd}%(!. %B%F{1}#%f%b.) ${editor_info[keymap]} ${prompt_nesneros_vcs_info} ${promp_nesneros_elapsed_time}
+%F{6}$_timestamp ${SSH_TTY:+"%F{9}%n%f%F{7}@%f%F{3}%m%f "}%F{1}${prompt_nesneros_mia_info}%F{7}${prompt_nesneros_docker_info}%F{2}${_prompt_nesneros_pwd}%(!. %B%F{1}#%f%b.) ${editor_info[keymap]} ${prompt_nesneros_vcs_info} ${promp_nesneros_elapsed_time}
 $_rc '
   RPROMPT=''
   SPROMPT='zsh: correct %F{1}%R%f to %F{2}%r%f [nyae]? '
